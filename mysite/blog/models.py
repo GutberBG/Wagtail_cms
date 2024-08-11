@@ -16,12 +16,13 @@ from wagtail.search import index
 
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
-    # add the get_context method:
+
     def get_context(self, request):
-        # Update context to include only published posts, ordered by reverse-chron
         context = super().get_context(request)
+        # Obtener los posts que pertenecen a esta instancia de BlogIndexPage
         blogpages = self.get_children().live().order_by('-first_published_at')
         context['blogpages'] = blogpages
+        context['posts'] = blogpages  # Pasar la lista de posts al contexto
         return context
 
 class BlogPageTag(TaggedItemBase):
@@ -45,6 +46,20 @@ class BlogPage(Page):
             return gallery_item.image
         else:
             return None
+        
+    def get_context(self, request):
+        # Obtener el contexto base
+        context = super().get_context(request)
+
+        # Agregar otros blogs al contexto
+        other_blogs = BlogPage.objects.live().public().exclude(id=self.id).order_by('-first_published_at')[:5]
+        context['blogs_list'] = other_blogs
+
+        return context
+
+    @property
+    def type_name(self):
+        return self.__class__.__name__
 
     search_fields = Page.search_fields + [
         index.SearchField('intro'),

@@ -5,22 +5,115 @@
 {% block body_class %}template-blogindexpage{% endblock %}
 
 {% block content %}
-    <h1>{{ page.title }}</h1>
+<style>
+    html,
+    body {
+        font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.21, rgb(53, 181, 255)), color-stop(0.84, rgb(252, 247, 200)));
+    }
 
-    <div class="intro">{{ page.intro|richtext }}</div>
+    .container {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 400px;
+        margin-right: 400px;
+    }
 
-    {% for post in blogpages %}
-    {% with post=post.specific %}
-        <h2><a href="{% pageurl post %}">{{ post.title }}</a></h2>
+    .white-box {
+        background-color: white;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.452);
+        border-radius: 8px;
+    }
 
-        <!-- Add this: -->
-        {% with post.main_image as main_image %}
-            {% if main_image %}{% image main_image fill-160x100 %}{% endif %}
-        {% endwith %}
+    .main-content {
+        flex: 3;
+        margin-right: 20px;
+    }
+    
+    .sidebar {
+        flex: 1;
+    }
 
-        <p>{{ post.intro }}</p>
-        {{ post.body|richtext }}
-    {% endwith %}
-{% endfor %}
+    .post-meta {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+    }
 
+    @media (max-width: 1000px) {
+        .container {
+            flex-direction: column;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .main-content, .sidebar {
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 1500px) {
+        .container {
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+    }
+</style>
+
+<div>
+    <div class="container">
+        <div class="main-content">
+            <div class="white-box">
+                <h1>{{ page.title }}</h1>
+            </div>
+
+            
+            {% for post in blogpages %}
+            {% with post=post.specific %}
+            {% if post.type_name == "BlogPage" %}
+            <div class="white-box">
+                <div style="display: flex; align-items: center;">        
+                    {% with post.main_image as main_image %}
+                    {% if main_image %}
+                    <div style="margin-right: 20px;">
+                        {% image main_image fill-160x100 %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    
+                    <div>
+                        <h2 style="margin: 0; font-size: 28px; font-weight: 700;"><a href="{% pageurl post %}">{{ post.title }}</a></h2>
+                        <!-- Introducción del post -->
+                        <p style="margin: 0; margin-top: 8px; font-size: 20px;">{{ post.intro }}</p>
+
+                        <!-- Meta información: autor y fecha -->
+                        <p class="post-meta">Creado por {% for author in post.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %} | Publicado en {{ post.date }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+            {% endfor %}
+        </div>
+
+        
+        <div class="sidebar">
+            <div class="white-box">
+                <h3>Posts en este Blog</h3>
+                <ul>
+                    {% for post in blogpages %}
+                    <li style="margin-top: 8px;">
+                        <a href="{% pageurl post %}">{{ post.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

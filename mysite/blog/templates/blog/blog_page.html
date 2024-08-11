@@ -5,46 +5,115 @@
 {% block body_class %}template-blogpage{% endblock %}
 
 {% block content %}
-    <h1>{{ page.title }}</h1>
-    <p class="meta">{{ page.date }}</p>
+<style>
+    
+    html,
+    body {
+        font-family: Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+        margin: 0;
+        padding: 0;
+        
+        background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.21, rgb(53, 181, 255)), color-stop(0.84, rgb(252, 247, 200)));
+    }
 
-    <!-- Add this: -->
-    {% with authors=page.authors.all %}
-        {% if authors %}
+    
+    .full-background {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 400px;
+        margin-right: 300px;
+    }
+
+    .white-box {
+        background-color: white;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        padding: 25px;
+        padding-left: 35px;
+        padding-right: 35px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.452); 
+        border-radius: 8px; 
+    }
+    @media (max-width: 1000px) {
+        .container {
+            margin-left: 5px;
+            margin-right: 5px;
+            flex-direction: column;
+        }
+    }
+    @media (max-width: 1500px) {
+        .container {
+            margin-left: 50px;
+            margin-right: 50px;
+             
+        }
+    }
+</style>
+
+<div>
+    <div class="container">
+
+        
+        <div class="white-box" style="flex: 3; margin-right: 20px;">
+            <h1>{{ page.title }}</h1>
+            <p class="meta">{{ page.date }}</p>
+
+            {% with authors=page.authors.all %}
+            {% if authors %}
             <h3>Posted by:</h3>
             <ul>
                 {% for author in authors %}
-                    <li style="display: inline">
-                        {% image author.author_image fill-40x60 style="vertical-align: middle" %}
-                        {{ author.name }}
-                    </li>
+                <li style="display: inline">
+                    {% image author.author_image fill-40x60 style="vertical-align: middle" %}
+                    {{ author.name }}
+                </li>
                 {% endfor %}
             </ul>
-        {% endif %}
-    {% endwith %}
+            {% endif %}
+            {% endwith %}
 
-    <div class="intro">{{ page.intro }}</div>
+            <div class="intro">{{ page.intro }}</div>
 
-    {{ page.body|richtext }}
+            {{ page.body|richtext }}
+            <div>Galeria de Imagenes</div>
+            {% for item in page.gallery_images.all %}
+            <div style=" margin: 10px">
+                {% image item.image fill-320x240 %}
+                
+            </div>
+            {% endfor %}
 
-    {% for item in page.gallery_images.all %}
-        <div style="float: inline-start; margin: 10px">
-            {% image item.image fill-320x240 %}
-            <p>{{ item.caption }}</p>
-        </div>
-    {% endfor %}
+            <p><a href="{{ page.get_parent.url }}">Return to blog</a></p>
 
-    <p><a href="{{ page.get_parent.url }}">Return to blog</a></p>
-    
-    {% with tags=page.tags.all %}
-        {% if tags %}
+            {% with tags=page.tags.all %}
+            {% if tags %}
             <div class="tags">
                 <h3>Tags</h3>
                 {% for tag in tags %}
-                    <a href="{% slugurl 'tags' %}?tag={{ tag }}"><button type="button">{{ tag }}</button></a>
+                <a href="{% slugurl 'tags' %}?tag={{ tag }}"><button type="button">{{ tag }}</button></a>
                 {% endfor %}
             </div>
-        {% endif %}
-    {% endwith %}
+            {% endif %}
+            {% endwith %}
+        </div>
 
+        
+        <div class="white-box" style="flex: 1;">
+            <h3>Otros post</h3>
+            <ul>
+                {% for blog in blogs_list %}
+                <li style="margin-top: 8px;">
+                    <a href="{{ blog.url }}">{{ blog.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
